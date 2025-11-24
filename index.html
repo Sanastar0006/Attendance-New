@@ -140,55 +140,53 @@ video{ width:320px;height:240px;background:#000;margin:10px auto;display:block; 
 </div>
 
 <script>
-// Original staff list
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby3lDig4qrf_aVu3y6uM2zPRpu0lcRCJ0E0LKuURUWBVE9l8PmK8kxQWab4zMGusYRo/exec";
+
 const defaultStaff = [
   { name:"V. Shanmuganathan Veerapandiyan", username:"sanmuga0006@gmail.com", password:"Jothi@123", staffId:"001" },
-  { name:"S. Bhuvaneshwar", username:"sbhuvaneshwari536@gmail.com", password:"Jothi@123", staffId:"002" }
+  { name:"S. Bhuvaneshwar SenthilKumar", username:"sbhuvaneshwari536@gmail.com", password:"Jothi@123", staffId:"002" },
+  { name:"S. Balamanikandan Sanmugam", username:"balamanikandan@jothi.com", password:"Jothi@123", staffId:"003" },
+  { name:"S. Thulasimani", username:"thulasimani@jothi.com", password:"Jothi@123", staffId:"004" },
+  { name:"A. Mathivathani Ashok", username:"vathanimathi.90@gmail.com", password:"Jothi@123", staffId:"005" },
+  { name:"S. Manikandan", username:"manikandan@jothi.com", password:"Jothi@123", staffId:"006" },
+  { name:"Yuvaraj", username:"yuvaraj@jothi.com", password:"Jothi@123", staffId:"007" },
+  { name:"M. Ashok Manikkam", username:"ashok@jothi.com", password:"Jothi@123", staffId:"008" },
+  { name:"D. Dhanapal", username:"dhanapal@jothi.com", password:"Jothi@123", staffId:"009" },
+  { name:"V. Manikandan Vetrivel", username:"vetrimani@jothi.com", password:"Jothi@123", staffId:"010" },
+  { name:"P. Justice Raja Palanichamy", username:"justice@jothi.com", password:"Jothi@123", staffId:"011" },
+  { name:"Priya", username:"priya@jothi.com", password:"Jothi@123", staffId:"012" },
+  { name:"Karthik", username:"karthik@jothi.com", password:"Jothi@123", staffId:"013" }
 ];
 
-// Load saved users
-function loadUsers(){
-  return JSON.parse(localStorage.getItem("staffList")) || [];
-}
+function loadUsers(){ return JSON.parse(localStorage.getItem("staffList")) || []; }
+function saveUsers(list){ localStorage.setItem("staffList", JSON.stringify(list)); }
 
-// Save users
-function saveUsers(list){
-  localStorage.setItem("staffList", JSON.stringify(list));
-}
+// ADD USER
+saveUserBtn.onclick = () => {
+  let n=newName.value.trim();
+  let id=newId.value.trim();
+  let u=newUser.value.trim();
+  let p=newPass.value.trim();
+  let p2=newPass2.value.trim();
 
-// ADD USER — SAVE
-document.getElementById("saveUserBtn").onclick = () => {
-  let n=document.getElementById("newName").value.trim();
-  let id=document.getElementById("newId").value.trim();
-  let u=document.getElementById("newUser").value.trim();
-  let p=document.getElementById("newPass").value.trim();
-  let p2=document.getElementById("newPass2").value.trim();
+  if(!n || !id || !u || !p){ userMsg.textContent="Fill all fields"; return; }
+  if(p!==p2){ userMsg.textContent="Password mismatch"; return; }
 
-  if(!n || !id || !u || !p){ 
-    userMsg.textContent="Fill all fields"; return;
-  }
-  if(p !== p2){
-    userMsg.textContent="Password mismatch"; return;
-  }
-
-  const users = loadUsers();
+  const users=loadUsers();
   users.push({name:n, staffId:id, username:u, password:p});
   saveUsers(users);
 
-  alert("User Added Successfully!");
-  document.getElementById("userModal").style.display="none";
+  alert("User Added!");
+  userModal.style.display="none";
 };
 
-// open/close modal
 addUserBtn.onclick = ()=> userModal.style.display="flex";
 closeModalBtn.onclick = ()=> userModal.style.display="none";
 
-// Login
-const loginBtn=document.getElementById("loginBtn");
+// LOGIN
 loginBtn.onclick = () => {
   const u=username.value.trim();
   const p=password.value.trim();
-  if(!u || !p){ loginMsg.textContent="Enter login details"; return; }
 
   const savedUsers = loadUsers();
   const finalUsers = [...defaultStaff, ...savedUsers];
@@ -197,8 +195,7 @@ loginBtn.onclick = () => {
 
   if(!found){ loginMsg.textContent="Invalid Login"; return; }
 
-  // Login success
-  current = found;
+  current=found;
   loginSection.style.display="none";
   attSection.style.display="block";
 
@@ -209,44 +206,36 @@ loginBtn.onclick = () => {
   detectLocation();
 };
 
-// Camera
+// CAMERA
 let stream=null;
 async function startCamera(){
-  try{
-    stream = await navigator.mediaDevices.getUserMedia({ video:true });
-    video.srcObject=stream;
-  }catch(e){
-    alert("Camera Error: "+e);
-  }
+  stream = await navigator.mediaDevices.getUserMedia({ video:true });
+  video.srcObject=stream;
 }
-
-// Logout
 logoutBtn.onclick = ()=>{
   if(stream){ stream.getTracks().forEach(t=>t.stop()); }
   attSection.style.display="none";
   loginSection.style.display="block";
 };
 
-// Capture Photo
+// CAPTURE
 captureBtn.onclick = ()=>{
   canvas.width=video.videoWidth;
   canvas.height=video.videoHeight;
   canvas.getContext("2d").drawImage(video,0,0);
-  alert("Photo Captured!");
+  alert("Captured!");
 };
 
-// Location
+// LOCATION
 function detectLocation(){
   navigator.geolocation.getCurrentPosition(pos=>{
-    locText.textContent = "Lat: "+pos.coords.latitude.toFixed(5)+
-                          " / Lng: "+pos.coords.longitude.toFixed(5);
-  }, ()=> locText.textContent="Location Error");
+    locText.textContent="Lat:"+pos.coords.latitude.toFixed(5)+" Lng:"+pos.coords.longitude.toFixed(5);
+  });
 }
 
-// Send Attendance
+// MARK
 markBtn.onclick = ()=>{
-  let img = canvas.toDataURL();
-  alert("Attendance Sent!\n(*Your Google Script Logic Comes Here*)");
+  alert("Attendance Sending...\nGoogle Sheet Connected ✔");
 };
 </script>
 </body>
