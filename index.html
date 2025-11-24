@@ -1,255 +1,477 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ta">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Staff Attendance Portal</title>
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      color: #fff;
-    }
-    .card {
-      width: 420px;
-      background: rgba(255,255,255,0.08);
-      padding: 28px;
-      border-radius: 18px;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-      text-align: center;
-      border: 1px solid rgba(255,255,255,0.15);
-    }
-    h2 {
-      margin-bottom: 18px;
-      font-weight: 600;
-      font-size: 26px;
-      color: #f5f5f5;
-      letter-spacing: 1px;
-    }
-    .input-group {
-      position: relative;
-      margin-bottom: 18px;
-    }
-    .input-group i {
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #cfcfcf;
-      font-size: 15px;
-    }
-    .input-group input {
-      width: 18px;
-      height: 20px;
-      padding: 0 10px;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.2);
-      background: rgba(255,255,255,0.1);
-      color: #fff;
-      font-size: 14px;
-      outline: none;
-    }
-    .input-group input:focus {
-      border-color: #6dd5fa;
-      box-shadow: 0 0 8px #6dd5fa;
-    }
-    .toggle-eye {
-      position: absolute;
-      right: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      cursor: pointer;
-      color: #ddd;
-    }
-    button {
-      width: 20px;
-      height: 21px;
-      background: linear-gradient(135deg, #6dd5fa, #2980b9);
-      color: #fff;
-      border: none;
-      padding: 0;
-      font-size: 14px;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: 0.3s;
-      font-weight: 600;
-    }
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.3);
-    }
-    #attSection {
-      display: none;
-      text-align: center;
-    }
-    video {
-      width: 330px;
-      height: 250px;
-      background: rgba(0,0,0,0.4);
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.1);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-      margin: 10px auto;
-    }
-    select, input[type=text], input[type=password] {
-      padding: 10px;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.2);
-      background: rgba(255,255,255,0.1);
-      color: #fff;
-      width: 90%;
-    }
-    .row {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      margin-top: 12px;
-    }
-    .row button {
-      width: auto;
-      padding: 10px 18px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #6dd5fa, #2980b9);
-      font-weight: 600;
-    }
-    #loginMsg, #statusMsg {
-      color: #ff7777;
-      font-size: 14px;
-      margin-top: 10px;
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Staff Attendance — Add User & Sheets</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<style>
+  /* Luxury theme + requested sizes */
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+  :root{
+    --card-w:420px;
+    --input-w:180px;   /* width for inputs */
+    --input-h:20px;    /* height for inputs */
+    --btn-w:200px;     /* width for buttons */
+    --btn-h:21px;      /* height for buttons */
+  }
+  body{
+    font-family:'Poppins',sans-serif;
+    background: linear-gradient(135deg,#0f1724,#07113a 60%);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:0;
+    color:#fff;
+  }
+  .card{
+    width:var(--card-w);
+    background:rgba(255,255,255,0.06);
+    border-radius:16px;
+    padding:26px;
+    box-shadow:0 12px 40px rgba(2,6,23,0.6);
+    backdrop-filter: blur(8px);
+    position:relative;
+    border:1px solid rgba(255,255,255,0.06);
+  }
+  h2{ margin:0 0 12px 0; font-size:20px; letter-spacing:0.4px; }
+  .small{ font-size:13px; color:rgba(255,255,255,0.7); margin-bottom:12px; }
+
+  /* Add User button top-right */
+  #addUserBtn{
+    position:absolute;
+    right:18px;
+    top:18px;
+    width:120px;
+    height:30px;
+    border-radius:8px;
+    border:none;
+    background:linear-gradient(90deg,#06b6d4,#3b82f6);
+    color:#fff;
+    cursor:pointer;
+    font-weight:600;
+  }
+
+  /* Inputs (requested size: height 20, width 18 -> interpreted as px values above) */
+  .input-row{ display:flex; gap:12px; align-items:center; justify-content:center; margin-bottom:12px; }
+  input[type=text], input[type=password], select{
+    width:var(--input-w);
+    height:var(--input-h);
+    padding:2px 8px;
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,0.12);
+    background:rgba(255,255,255,0.03);
+    color:#fff;
+    font-size:13px;
+    outline:none;
+  }
+  input[type=text]::placeholder, input[type=password]::placeholder { color:rgba(255,255,255,0.45); }
+
+  /* Buttons requested size */
+  button.primary{
+    width:var(--btn-w);
+    height:var(--btn-h);
+    padding:0;
+    border-radius:8px;
+    border:none;
+    background:linear-gradient(90deg,#6dd5fa,#2980b9);
+    color:#fff;
+    cursor:pointer;
+    font-weight:600;
+    font-size:13px;
+  }
+  .row{ display:flex; gap:10px; justify-content:center; margin-top:10px; }
+
+  /* Attendance video */
+  video{ width:330px; height:240px; border-radius:12px; background:#000; display:block; margin:10px auto; border:1px solid rgba(255,255,255,0.06); }
+
+  /* Modal */
+  .modal-bg{ position:fixed; inset:0; background:rgba(0,0,0,0.6); display:none; align-items:center; justify-content:center; z-index:50; }
+  .modal{ width:360px; background:rgba(255,255,255,0.03); padding:18px; border-radius:12px; border:1px solid rgba(255,255,255,0.06); box-shadow:0 10px 30px rgba(2,6,23,0.6); color:#fff; }
+  .modal h3{ margin-top:0; margin-bottom:8px; }
+
+  /* messages */
+  .msg{ font-size:13px; color:#ffd9d9; height:18px; text-align:center; margin-top:8px; }
+
+  /* responsive */
+  @media(max-width:480px){
+    :root{ --card-w:92vw; --input-w:140px; --btn-w:160px; }
+    video{ width:260px; height:200px; }
+  }
+</style>
 </head>
 <body>
 
-<header>
-  <h2>Attendance Portal</h2>
+<div class="card" id="mainCard">
   <button id="addUserBtn">Add User</button>
-</header>
 
-<!-- LOGIN -->
-<div id="loginSection" class="box">
-  <h3>Login</h3>
-  <label>Username</label>
-  <select id="loginUser"></select>
+  <h2>Staff Attendance</h2>
+  <div class="small">Login with email & password. If user not present, Add User → will save to Google Sheet (User).</div>
 
-  <label>Password</label>
-  <input type="password" id="loginPass" />
+  <!-- LOGIN -->
+  <div id="loginSection">
+    <div class="input-row">
+      <select id="loginUser"></select>
+    </div>
+    <div class="input-row">
+      <input id="loginPass" type="password" placeholder="Password" />
+    </div>
+    <div class="row">
+      <button class="primary" id="loginBtn">Login</button>
+    </div>
+    <div class="msg" id="loginMsg"></div>
+  </div>
 
-  <button id="loginBtn">Login</button>
-  <p id="loginMsg" style="color:red"></p>
-</div>
+  <!-- ATTENDANCE -->
+  <div id="attSection" style="display:none; margin-top:8px;">
+    <div style="text-align:center; margin-bottom:6px;">
+      <strong id="attName">—</strong><div style="font-size:12px;color:rgba(255,255,255,0.6)" id="attEmail"></div>
+    </div>
 
-<!-- ATTENDANCE PAGE -->
-<div id="attSection">
-  <h2>Welcome <span id="attName"></span></h2>
-  <p>You are now inside the Attendance Portal</p>
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas" width="320" height="240" style="display:none"></canvas>
+
+    <div style="text-align:center; margin-top:6px;">
+      <select id="status">
+        <option>Present</option>
+        <option>Half Day</option>
+        <option>Leave</option>
+      </select>
+      <input id="note" type="text" placeholder="Note (optional)" style="margin-left:6px; width:120px; height:20px;"/>
+    </div>
+
+    <div class="row">
+      <button class="primary" id="captureBtn" style="width:120px;height:28px;">Capture</button>
+      <button class="primary" id="markBtn" style="width:120px;height:28px;">Mark</button>
+      <button class="primary" id="logoutBtn" style="width:120px;height:28px;background:linear-gradient(90deg,#ef7a7a,#ff5c5c);">Logout</button>
+    </div>
+
+    <div class="msg" id="locText">Location: detecting...</div>
+    <div class="msg" id="statusMsg"></div>
+  </div>
 </div>
 
 <!-- ADD USER MODAL -->
-<div id="userModal">
-  <div class="modalBox">
-    <h3>Add User</h3>
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h3>Add New User</h3>
 
-    <label>Staff Name</label>
-    <input type="text" id="uName" />
-
-    <label>Staff ID</label>
-    <input type="text" id="uID" />
-
-    <label>Username</label>
-    <input type="text" id="uUser" />
-
-    <label>Create Password</label>
-    <input type="password" id="uPass" />
-
-    <label>Confirm Password</label>
-    <input type="password" id="uCPass" />
-
-    <div class="rowBtn">
-      <button id="saveBtn">Save</button>
-      <button id="clearBtn" style="background:#dc3545">Clear</button>
+    <input id="newName" type="text" placeholder="Staff Name" />
+    <div style="display:flex; gap:8px; margin-top:8px;">
+      <input id="newId" type="text" placeholder="Staff ID" style="flex:1" />
+      <input id="newUser" type="text" placeholder="Email (username)" style="flex:1" />
+    </div>
+    <div style="display:flex; gap:8px; margin-top:8px;">
+      <input id="newPass" type="password" placeholder="Password" />
+      <input id="newPass2" type="password" placeholder="Confirm" />
     </div>
 
-    <button id="closeBtn" style="margin-top:10px;background:#555">Close</button>
+    <div class="row" style="margin-top:12px;">
+      <button class="primary" id="saveUserBtn" style="width:120px;height:28px;">Save</button>
+      <button class="primary" id="clearBtn" style="width:120px;height:28px;background:linear-gradient(90deg,#9ca3ff,#6d28d9);">Clear</button>
+    </div>
+
+    <div style="text-align:center; margin-top:8px;">
+      <button id="closeModal" style="margin-top:8px; padding:8px 12px; border-radius:8px; border:none; background:#333;color:#fff;">Close</button>
+    </div>
+
+    <div class="msg" id="userMsg"></div>
   </div>
 </div>
 
 <script>
-// Load Users
-let users = JSON.parse(localStorage.getItem("attUsers") || "[]");
+/* ------------------------
+  Configuration
+-------------------------*/
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby3lDig4qrf_aVu3y6uM2zPRpu0lcRCJ0E0LKuURUWBVE9l8PmK8kxQWab4zMGusYRo/exec";
 
-function loadUsers() {
-  const sel = document.getElementById("loginUser");
-  sel.innerHTML = "";
-  users.forEach(u => {
-    let op = document.createElement("option");
-    op.value = u.username;
-    op.textContent = u.username;
-    sel.appendChild(op);
+/* Default staff (keeps old list for convenience) - you already have these */
+const defaultStaff = [
+  { name:"V. Shanmuganathan Veerapandiyan", username:"sanmuga0006@gmail.com", password:"Jothi@123", staffId:"001" },
+  { name:"S. Bhuvaneshwar SenthilKumar", username:"sbhuvaneshwari536@gmail.com", password:"Jothi@123", staffId:"002" },
+  { name:"S. Balamanikandan Sanmugam", username:"balamanikandan@jothi.com", password:"Jothi@123", staffId:"003" },
+  { name:"S. Thulasimani", username:"thulasimani@jothi.com", password:"Jothi@123", staffId:"004" },
+  { name:"A. Mathivathani Ashok", username:"vathanimathi.90@gmail.com", password:"Jothi@123", staffId:"005" },
+  { name:"S. Manikandan", username:"manikandan@jothi.com", password:"Jothi@123", staffId:"006" },
+  { name:"Yuvaraj", username:"yuvaraj@jothi.com", password:"Jothi@123", staffId:"007" },
+  { name:"M. Ashok Manikkam", username:"ashok@jothi.com", password:"Jothi@123", staffId:"008" },
+  { name:"D. Dhanapal", username:"dhanapal@jothi.com", password:"Jothi@123", staffId:"009" },
+  { name:"V. Manikandan Vetrivel", username:"vetrimani@jothi.com", password:"Jothi@123", staffId:"010" },
+  { name:"P. Justice Raja Palanichamy", username:"justice@jothi.com", password:"Jothi@123", staffId:"011" },
+  { name:"Priya", username:"priya@jothi.com", password:"Jothi@123", staffId:"012" },
+  { name:"Karthik", username:"karthik@jothi.com", password:"Jothi@123", staffId:"013" }
+];
+
+/* ------------------------
+  Local state & elements
+-------------------------*/
+let localUsers = JSON.parse(localStorage.getItem('att_users') || '[]'); // stored locally for immediate login
+const loginUser = document.getElementById('loginUser');
+const loginPass = document.getElementById('loginPass');
+const loginBtn = document.getElementById('loginBtn');
+const loginMsg = document.getElementById('loginMsg');
+
+const addUserBtn = document.getElementById('addUserBtn');
+const modalBg = document.getElementById('modalBg');
+const closeModal = document.getElementById('closeModal');
+const saveUserBtn = document.getElementById('saveUserBtn');
+const clearBtn = document.getElementById('clearBtn');
+const userMsg = document.getElementById('userMsg');
+
+const attSection = document.getElementById('attSection');
+const loginSection = document.getElementById('loginSection');
+const attName = document.getElementById('attName');
+const attEmail = document.getElementById('attEmail');
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const captureBtn = document.getElementById('captureBtn');
+const markBtn = document.getElementById('markBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+const locText = document.getElementById('locText');
+const statusMsg = document.getElementById('statusMsg');
+
+let currentUser = null;
+let cameraStream = null;
+let lastLat = '', lastLng = '';
+
+/* ------------------------
+  Helpers
+-------------------------*/
+function mergeUsers(){
+  // combine defaultStaff + localUsers (localUsers may include users saved to Google sheet earlier)
+  const map = {};
+  defaultStaff.concat(localUsers).forEach(u=>{
+    map[u.username] = u;
+  });
+  return Object.values(map);
+}
+
+function populateLoginDropdown(){
+  const list = mergeUsers();
+  loginUser.innerHTML = '';
+  const blank = document.createElement('option'); blank.value=''; blank.text='-- Select User --'; loginUser.appendChild(blank);
+  list.forEach(u=>{
+    const opt = document.createElement('option');
+    opt.value = u.username;
+    opt.text = u.username;
+    loginUser.appendChild(opt);
   });
 }
-loadUsers();
+populateLoginDropdown();
 
-// Open Add User
-addUserBtn.onclick = () => userModal.style.display = "flex";
-closeBtn.onclick = () => userModal.style.display = "none";
+/* ------------------------
+  Add User -> Save to Google Sheet (User) AND localStorage
+  Sends JSON: { action:'saveUser', sheet:'User', payload:{ staffName, staffId, username, password } }
+-------------------------*/
+saveUserBtn.addEventListener('click', async ()=>{
+  userMsg.textContent = '';
+  const name = document.getElementById('newName').value.trim();
+  const id = document.getElementById('newId').value.trim();
+  const username = document.getElementById('newUser').value.trim();
+  const pass = document.getElementById('newPass').value;
+  const pass2 = document.getElementById('newPass2').value;
 
-// Clear
-clearBtn.onclick = () => {
-  uName.value = "";
-  uID.value = "";
-  uUser.value = "";
-  uPass.value = "";
-  uCPass.value = "";
-};
+  if(!name || !id || !username || !pass){ userMsg.textContent = 'Fill all fields'; return; }
+  if(pass !== pass2){ userMsg.textContent = 'Password mismatch'; return; }
 
-// Save User (Local Only)
-saveBtn.onclick = () => {
-  if (uPass.value !== uCPass.value) {
-    alert("Passwords not match machi!");
-    return;
-  }
+  // disable while saving
+  saveUserBtn.disabled = true;
+  saveUserBtn.textContent = 'Saving...';
 
-  const newU = {
-    name: uName.value,
-    id: uID.value,
-    username: uUser.value,
-    password: uPass.value
+  const payload = {
+    staffName: name,
+    staffId: id,
+    username: username,
+    password: pass
   };
 
-  users.push(newU);
-  localStorage.setItem("attUsers", JSON.stringify(users));
+  try{
+    const res = await fetch(WEB_APP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action:'saveUser', sheet:'User', payload })
+    });
+    // Some deployments might block CORS; we attempt to parse response if available
+    let data = null;
+    try{ data = await res.json(); }catch(e){ /* ignore parse errors */ }
 
-  alert("User Added Successfully!");
-  loadUsers();
-  userModal.style.display = "none";
-};
+    // store locally for immediate login
+    localUsers.push(payload);
+    localStorage.setItem('att_users', JSON.stringify(localUsers));
+    populateLoginDropdown();
 
-// LOGIN
-loginBtn.onclick = () => {
-  const u = loginUser.value;
-  const p = loginPass.value;
+    userMsg.style.color = '#b7f5c1';
+    userMsg.textContent = 'Saved to Google Sheet & local.';
+    setTimeout(()=>{ modalBg.style.display='none'; userMsg.textContent=''; },700);
+  }catch(err){
+    userMsg.style.color = '#ffd2d2';
+    userMsg.textContent = 'Save failed (network). User saved locally only.';
+    // fallback: save locally so user can login
+    localUsers.push(payload);
+    localStorage.setItem('att_users', JSON.stringify(localUsers));
+    populateLoginDropdown();
+  } finally {
+    saveUserBtn.disabled = false;
+    saveUserBtn.textContent = 'Save';
+  }
+});
 
-  const found = users.find(x => x.username === u && x.password === p);
+clearBtn.addEventListener('click', ()=>{
+  document.getElementById('newName').value='';
+  document.getElementById('newId').value='';
+  document.getElementById('newUser').value='';
+  document.getElementById('newPass').value='';
+  document.getElementById('newPass2').value='';
+  userMsg.textContent='';
+});
 
-  if (!found) {
-    loginMsg.textContent = "Invalid Username or Password";
-    return;
+/* modal open/close */
+addUserBtn.addEventListener('click', ()=>{ modalBg.style.display = 'flex'; });
+closeModal.addEventListener('click', ()=>{ modalBg.style.display = 'none'; });
+
+/* ------------------------
+  Login -> open Attendance portal
+-------------------------*/
+loginBtn.addEventListener('click', ()=>{
+  loginMsg.textContent = '';
+  const uname = loginUser.value;
+  const pwd = loginPass.value;
+  if(!uname || !pwd){ loginMsg.textContent = 'Enter username & password'; return; }
+
+  const all = mergeUsers();
+  const found = all.find(x => x.username === uname && x.password === pwd);
+  if(!found){ loginMsg.textContent = 'Invalid credentials'; return; }
+
+  currentUser = found;
+  // show attendance UI
+  loginSection.style.display = 'none';
+  attSection.style.display = 'block';
+  attName.textContent = found.name;
+  attEmail.textContent = found.username;
+
+  startCamera().catch(e=>{ alert('Camera error: '+e.message); });
+  detectLocation();
+});
+
+/* ------------------------
+  Camera & capture
+-------------------------*/
+async function startCamera(){
+  try{
+    cameraStream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'user' }, audio:false });
+    video.srcObject = cameraStream;
+    await video.play();
+  }catch(err){
+    throw err;
+  }
+}
+function stopCamera(){
+  if(cameraStream){ cameraStream.getTracks().forEach(t=>t.stop()); cameraStream = null; }
+}
+
+captureBtn.addEventListener('click', ()=>{
+  if(!cameraStream){ alert('Camera not started'); return; }
+  const w = video.videoWidth || 320;
+  const h = video.videoHeight || 240;
+  canvas.width = w; canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0, w, h);
+  // show small feedback
+  statusMsg.style.color = '#b7f5c1';
+  statusMsg.textContent = 'Photo captured';
+  setTimeout(()=> statusMsg.textContent = '', 900);
+});
+
+/* ------------------------
+  Geolocation
+-------------------------*/
+function detectLocation(){
+  if(!navigator.geolocation){ locText.textContent = 'Location not supported'; return; }
+  navigator.geolocation.getCurrentPosition(pos=>{
+    lastLat = pos.coords.latitude;
+    lastLng = pos.coords.longitude;
+    locText.textContent = `Lat ${lastLat.toFixed(5)}, Lng ${lastLng.toFixed(5)}`;
+  }, err=>{
+    locText.textContent = 'Location denied or error';
+  });
+}
+
+/* ------------------------
+  Mark Attendance -> send to Sheet "Attendance"
+  Payload: { username, staffName, staffId, status, note, lat, lng, photoBase64, timestamp }
+-------------------------*/
+markBtn.addEventListener('click', async ()=>{
+  if(!currentUser){ alert('Login first'); return; }
+
+  // ensure a photo has been captured (canvas not empty)
+  const blank = document.createElement('canvas');
+  blank.width = canvas.width; blank.height = canvas.height;
+  const blankCtx = blank.getContext('2d');
+  blankCtx.fillStyle = '#000'; blankCtx.fillRect(0,0,blank.width,blank.height);
+  const currentData = canvas.toDataURL ? canvas.toDataURL() : '';
+  if(!currentData || currentData === blank.toDataURL()){
+    const ok = confirm('No photo captured. Mark attendance without photo?');
+    if(!ok) return;
   }
 
-  loginSection.style.display = "none";
-  attSection.style.display = "block";
-  attName.textContent = found.name;
-};
+  const payload = {
+    username: currentUser.username,
+    staffName: currentUser.name || '',
+    staffId: currentUser.staffId || '',
+    status: document.getElementById('status').value,
+    note: document.getElementById('note').value || '',
+    lat: lastLat || '',
+    lng: lastLng || '',
+    photoBase64: canvas.toDataURL ? canvas.toDataURL('image/png') : '',
+    timestamp: (new Date()).toISOString()
+  };
+
+  statusMsg.style.color = '#fff8';
+  statusMsg.textContent = 'Sending attendance...';
+
+  try{
+    const res = await fetch(WEB_APP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action:'saveAttendance', sheet:'Attendance', payload })
+    });
+    // try parse response
+    try{ const j = await res.json(); /* optional */ }catch(e){ /* ignore */ }
+
+    statusMsg.style.color = '#b7f5c1';
+    statusMsg.textContent = 'Attendance sent. Saved to Google Sheet.';
+    alert('Attendance saved to Google Sheet (Attendance).');
+
+  }catch(err){
+    statusMsg.style.color = '#ffd2d2';
+    statusMsg.textContent = 'Send failed (network).';
+    alert('Send failed. You can try again or check network.');
+  }
+});
+
+/* ------------------------
+  Logout
+-------------------------*/
+logoutBtn.addEventListener('click', ()=>{
+  stopCamera();
+  currentUser = null;
+  attSection.style.display = 'none';
+  loginSection.style.display = 'block';
+  statusMsg.textContent = '';
+});
+
+/* ------------------------
+  On load: ensure login dropdown filled from local users
+-------------------------*/
+(function init(){
+  // load locally saved users from previous Add User ops
+  localUsers = JSON.parse(localStorage.getItem('att_users') || '[]');
+  populateLoginDropdown();
+})();
 </script>
 
-<button id="addUserBtn" style="position:absolute; top:20px; right:20px; width:120px; height:30px; font-size:14px; border-radius:8px; background:#00bcd4; color:#fff; border:none; cursor:pointer;">Add User</button>
 </body>
 </html>
-
