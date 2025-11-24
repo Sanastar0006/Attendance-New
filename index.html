@@ -3,234 +3,128 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Staff Attendance — Login & Add User</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <title>Staff Attendance - Login & Add User</title>
   <style>
-    :root{
-      --bg:#f4f7fb; --card:#ffffff; --accent:#2563eb; --muted:#6b7280; --success:#059669;
-    }
-    *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
-    body{margin:0;min-height:100vh;background:linear-gradient(180deg,#eef2ff 0%,var(--bg) 100%);display:flex;align-items:center;justify-content:center;padding:28px}
-    .container{width:100%;max-width:980px;background:var(--card);border-radius:12px;box-shadow:0 8px 30px rgba(16,24,40,0.08);overflow:hidden;display:grid;grid-template-columns:1fr 420px}
-
-    /* left: welcome / users list */
-    .left{padding:28px}
-    h1{margin:0 0 8px 0;font-size:20px}
-    p.lead{margin:0 0 18px 0;color:var(--muted)}
-    .users{margin-top:12px}
-    .users .row{display:flex;gap:8px;align-items:center;padding:8px;border-radius:8px;background:#f8fafc;margin-bottom:8px}
-    .users .avatar{width:40px;height:40px;border-radius:8px;background:linear-gradient(135deg,#c7d2fe,#e9d5ff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
-
-    /* right: login */
-    .right{background:linear-gradient(180deg,#ffffff,#fbfdff);padding:28px;position:relative}
-    .portal-header{display:flex;align-items:center;justify-content:space-between}
-    .portal-header h2{margin:0;font-size:16px}
-    .add-user-btn{background:transparent;border:2px solid var(--accent);color:var(--accent);padding:8px 12px;border-radius:8px;cursor:pointer;display:inline-flex;gap:8px;align-items:center}
-    .card{margin-top:18px;padding:18px;border-radius:10px;border:1px solid #edf2f7;background:transparent}
-    label{display:block;font-size:13px;margin-bottom:6px;color:var(--muted)}
-    input[type="text"], input[type="password"], input[type="date"]{width:100%;padding:10px;border-radius:8px;border:1px solid #e6edf6;background:#fff}
-    .actions{display:flex;gap:10px;margin-top:12px}
-    .ilikebut{flex:1;padding:10px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-weight:600;cursor:pointer}
-    .clearbut{flex:1;padding:10px;border-radius:10px;border:2px solid #e2e8f0;background:transparent;color:#111;cursor:pointer}
-    .note{font-size:13px;color:var(--muted);margin-top:10px}
-
-    /* modal */
-    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.5);display:none;align-items:center;justify-content:center;padding:24px}
-    .modal{background:var(--card);width:100%;max-width:520px;border-radius:12px;padding:18px;box-shadow:0 12px 40px rgba(2,6,23,0.1)}
-    .modal .row{margin-bottom:10px}
-    .modal .row .two{display:flex;gap:10px}
-    .modal .close{position:absolute;right:12px;top:12px;border:none;background:transparent;font-size:18px;cursor:pointer;color:var(--muted)}
-
-    /* small helpers */
-    .error{color:#b91c1c;font-size:13px;margin-top:6px}
-    .success{color:var(--success);font-size:13px;margin-top:6px}
-
-    @media(max-width:880px){.container{grid-template-columns:1fr}.right{order:2}.left{order:1}}
+    body { font-family: Arial, sans-serif; background:#f5f5f5; margin:0; }
+    header { background:#222; padding:12px; color:#fff; display:flex; justify-content:space-between; align-items:center; }
+    header h2 { margin:0; }
+    header button { background:#4CAF50; border:none; padding:8px 14px; color:white; border-radius:6px; cursor:pointer; }
+    .container { width:90%; max-width:400px; background:white; margin:40px auto; padding:20px; border-radius:8px; box-shadow:0 0 10px #ccc; }
+    input { width:100%; padding:10px; margin-top:8px; margin-bottom:16px; border:1px solid #ccc; border-radius:6px; }
+    .btn { width:48%; padding:10px; border:none; color:#fff; border-radius:6px; cursor:pointer; }
+    .save { background:#28a745; }
+    .clear { background:#dc3545; }
+    /* Modal */
+    #addUserModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); }
+    .modal-content { background:white; width:90%; max-width:400px; margin:60px auto; padding:20px; border-radius:8px; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="left">
-      <h1>Staff Attendance</h1>
-      <p class="lead">Login portal - manage users quickly. "Add User" button is at the top-right of the portal.</p>
 
-      <div class="users" id="usersList">
-        <!-- dynamic user list -->
-      </div>
+<header>
+  <h2>Staff Attendance</h2>
+  <button onclick="openAddUser()">Add User</button>
+</header>
+
+<div class="container">
+  <h3>Login</h3>
+  <label>Username</label>
+  <input list="userList" id="loginUser" />
+  <datalist id="userList"></datalist>
+
+  <label>Password</label>
+  <input type="password" id="loginPass" />
+
+  <button class="btn save" onclick="login()">Login</button>
+</div>
+
+<!-- Add User Modal -->
+<div id="addUserModal">
+  <div class="modal-content">
+    <h3>Add New User</h3>
+
+    <label>Staff Name :</label>
+    <input id="staffName" type="text" />
+
+    <label>Staff ID :</label>
+    <input id="staffId" type="text" />
+
+    <label>User Name :</label>
+    <input id="newUser" type="text" />
+
+    <label>Create Your Password :</label>
+    <input id="newPass" type="password" />
+
+    <label>Confirm Password :</label>
+    <input id="confirmPass" type="password" />
+
+    <div style="display:flex; justify-content:space-between;">
+      <button class="btn save" onclick="saveUser()">Save</button>
+      <button class="btn clear" onclick="clearForm()">Clear</button>
     </div>
 
-    <div class="right">
-      <div class="portal-header">
-        <h2>Login Portal</h2>
-        <button class="add-user-btn" id="openAddUserBtn"><i class="fa-solid fa-user-plus"></i> Add User</button>
-      </div>
-
-      <div class="card">
-        <label for="loginUser">User Name</label>
-        <input id="loginUser" list="userList" placeholder="Pick or type user name" />
-        <datalist id="userList"></datalist>
-
-        <label for="loginPass" style="margin-top:10px">Password</label>
-        <input id="loginPass" type="password" placeholder="Password" />
-
-        <div class="actions">
-          <button class="ilikebut" id="loginBtn">Login</button>
-          <button class="clearbut" id="loginClear">Clear</button>
-        </div>
-
-        <p class="note">If user not present, click <strong>Add User</strong> (right-top) to create one. Saved users are stored locally in your browser.</p>
-        <div id="loginMsg"></div>
-      </div>
-    </div>
+    <br>
+    <button style="width:100%; padding:10px; border:none; background:#555; color:white; border-radius:6px;" onclick="closeAddUser()">Close</button>
   </div>
+</div>
 
-  <!-- Modal: Add User -->
-  <div class="modal-backdrop" id="modalBackdrop">
-    <div class="modal" role="dialog" aria-modal="true">
-      <button class="close" id="closeModal"><i class="fa-solid fa-xmark"></i></button>
-      <h3 style="margin-top:0">Add New User</h3>
+<script>
+  function openAddUser() { document.getElementById('addUserModal').style.display='block'; }
+  function closeAddUser() { document.getElementById('addUserModal').style.display='none'; }
 
-      <div class="row">
-        <label>Staff Name :</label>
-        <input type="text" id="staffName" placeholder="e.g. R. Kumar" />
-      </div>
+  function clearForm(){
+    staffName.value = "";
+    staffId.value = "";
+    newUser.value = "";
+    newPass.value = "";
+    confirmPass.value = "";
+  }
 
-      <div class="row two">
-        <div style="flex:1">
-          <label>Staff ID :</label>
-          <input type="text" id="staffId" placeholder="e.g. ST001" />
-        </div>
-        <div style="flex:1">
-          <label>User Name :</label>
-          <input type="text" id="userName" placeholder="e.g. rkumar" />
-        </div>
-      </div>
+  function loadUsers(){
+    let users = JSON.parse(localStorage.getItem('users') || '[]');
+    let list = document.getElementById('userList');
+    list.innerHTML = "";
+    users.forEach(u => {
+      let opt = document.createElement('option');
+      opt.value = u.username;
+      list.appendChild(opt);
+    });
+  }
 
-      <div class="row two">
-        <div style="flex:1">
-          <label>Create Your Password :</label>
-          <input type="password" id="password" />
-        </div>
-        <div style="flex:1">
-          <label>Confirm Password :</label>
-          <input type="password" id="confirmPassword" />
-        </div>
-      </div>
+  loadUsers();
 
-      <div class="actions">
-        <button class="ilikebut" id="saveUserBtn">Save (I like Buttone)</button>
-        <button class="clearbut" id="clearFormBtn">Clear (I like Buttone)</button>
-      </div>
+  function saveUser(){
+    if(newPass.value !== confirmPass.value){ alert("Password Mismatch!"); return; }
 
-      <div id="formMsg"></div>
-    </div>
-  </div>
+    let users = JSON.parse(localStorage.getItem('users') || '[]');
 
-  <script>
-    // Utilities & state
-    const modal = document.getElementById('modalBackdrop');
-    const openBtn = document.getElementById('openAddUserBtn');
-    const closeBtn = document.getElementById('closeModal');
-
-    const staffName = document.getElementById('staffName');
-    const staffId = document.getElementById('staffId');
-    const userName = document.getElementById('userName');
-    const password = document.getElementById('password');
-    const confirmPassword = document.getElementById('confirmPassword');
-    const formMsg = document.getElementById('formMsg');
-
-    const userListDatalist = document.getElementById('userList');
-    const usersListDiv = document.getElementById('usersList');
-
-    let users = [];
-
-    function loadUsers(){
-      try{
-        const raw = localStorage.getItem('attendance_users');
-        users = raw ? JSON.parse(raw) : [];
-      }catch(e){ users = []; }
-      renderUsers();
-      populateDatalist();
-    }
-
-    function saveUsers(){
-      localStorage.setItem('attendance_users', JSON.stringify(users));
-    }
-
-    function renderUsers(){
-      usersListDiv.innerHTML = '';
-      if(users.length === 0){ usersListDiv.innerHTML = '<div style="color:var(--muted)">No users yet. Add using Add User button.</div>'; return; }
-      users.forEach(u=>{
-        const row = document.createElement('div'); row.className='row';
-        row.innerHTML = `<div class="avatar">${(u.staffName||u.userName||'U').charAt(0).toUpperCase()}</div>
-          <div style="flex:1">
-            <div style="font-weight:600">${u.staffName || '—'}</div>
-            <div style="font-size:13px;color:var(--muted)">${u.userName} • ${u.staffId || ''}</div>
-          </div>`;
-        usersListDiv.appendChild(row);
-      });
-    }
-
-    function populateDatalist(){
-      userListDatalist.innerHTML = '';
-      users.forEach(u=>{
-        const opt = document.createElement('option'); opt.value = u.userName; userListDatalist.appendChild(opt);
-      });
-    }
-
-    function resetForm(){ staffName.value=''; staffId.value=''; userName.value=''; password.value=''; confirmPassword.value=''; formMsg.innerHTML=''; }
-
-    // Open modal
-    openBtn.addEventListener('click',()=>{ modal.style.display='flex'; });
-    closeBtn.addEventListener('click',()=>{ modal.style.display='none'; });
-    modal.addEventListener('click',(e)=>{ if(e.target === modal) modal.style.display='none'; });
-
-    // Save user
-    document.getElementById('saveUserBtn').addEventListener('click',()=>{
-      formMsg.innerHTML='';
-      const sName = staffName.value.trim();
-      const sId = staffId.value.trim();
-      const uName = userName.value.trim();
-      const pw = password.value;
-      const cpw = confirmPassword.value;
-
-      if(!uName){ formMsg.innerHTML = '<div class="error">User Name is required.</div>'; return; }
-      if(!pw){ formMsg.innerHTML = '<div class="error">Password required.</div>'; return; }
-      if(pw !== cpw){ formMsg.innerHTML = '<div class="error">Passwords do not match.</div>'; return; }
-      // check duplicate username
-      if(users.some(x=>x.userName.toLowerCase()===uName.toLowerCase())){
-        formMsg.innerHTML = '<div class="error">User name already exists.</div>'; return;
-      }
-
-      // add user (note: password stored in plain text here for demo only — for production, never store passwords in plain localStorage)
-      const newUser = { staffName: sName, staffId: sId, userName: uName, password: pw };
-      users.push(newUser);
-      saveUsers();
-      renderUsers();
-      populateDatalist();
-      formMsg.innerHTML = '<div class="success">Saved successfully.</div>';
-      // auto-close after short time
-      setTimeout(()=>{ modal.style.display='none'; resetForm(); },700);
+    users.push({
+      staffName: staffName.value,
+      staffId: staffId.value,
+      username: newUser.value,
+      password: newPass.value
     });
 
-    document.getElementById('clearFormBtn').addEventListener('click',resetForm);
-
-    // Login actions (demo)
-    document.getElementById('loginBtn').addEventListener('click',()=>{
-      const uname = document.getElementById('loginUser').value.trim();
-      const pw = document.getElementById('loginPass').value;
-      const loginMsg = document.getElementById('loginMsg'); loginMsg.innerHTML='';
-      if(!uname || !pw){ loginMsg.innerHTML='<div class="error">Enter username and password.</div>'; return; }
-      const found = users.find(u=>u.userName.toLowerCase()===uname.toLowerCase());
-      if(!found){ loginMsg.innerHTML='<div class="error">User not found.</div>'; return; }
-      if(found.password !== pw){ loginMsg.innerHTML='<div class="error">Wrong password.</div>'; return; }
-      loginMsg.innerHTML = '<div class="success">Login successful. (Demo)</div>';
-    });
-
-    document.getElementById('loginClear').addEventListener('click',()=>{ document.getElementById('loginUser').value=''; document.getElementById('loginPass').value=''; document.getElementById('loginMsg').innerHTML=''; });
-
-    // initialize
+    localStorage.setItem('users', JSON.stringify(users));
+    alert("User Added Successfully!");
     loadUsers();
-  </script>
+    closeAddUser();
+  }
+
+  function login(){
+    let u = loginUser.value;
+    let p = loginPass.value;
+
+    let users = JSON.parse(localStorage.getItem('users') || '[]');
+    let found = users.find(x => x.username === u && x.password === p);
+
+    if(found){
+      alert("Login Success!");
+    } else {
+      alert("Invalid Username or Password");
+    }
+  }
+</script>
+
 </body>
 </html>
