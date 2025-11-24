@@ -1,130 +1,253 @@
 <!doctype html>
 <html lang="ta">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Staff Attendance - Login & Add User</title>
-  <style>
-    body { font-family: Arial, sans-serif; background:#f5f5f5; margin:0; }
-    header { background:#222; padding:12px; color:#fff; display:flex; justify-content:space-between; align-items:center; }
-    header h2 { margin:0; }
-    header button { background:#4CAF50; border:none; padding:8px 14px; color:white; border-radius:6px; cursor:pointer; }
-    .container { width:90%; max-width:400px; background:white; margin:40px auto; padding:20px; border-radius:8px; box-shadow:0 0 10px #ccc; }
-    input { width:100%; padding:10px; margin-top:8px; margin-bottom:16px; border:1px solid #ccc; border-radius:6px; }
-    .btn { width:48%; padding:10px; border:none; color:#fff; border-radius:6px; cursor:pointer; }
-    .save { background:#28a745; }
-    .clear { background:#dc3545; }
-    /* Modal */
-    #addUserModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); }
-    .modal-content { background:white; width:90%; max-width:400px; margin:60px auto; padding:20px; border-radius:8px; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Staff Attendance</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+body{
+  font-family: Arial;
+  background:#f4f7fb;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  margin:0;
+}
+.card{
+  width:400px;
+  background:#fff;
+  padding:24px;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.1);
+  text-align:center;
+  position:relative;
+}
+#addUserBtn{
+  position:absolute;
+  right:15px;
+  top:15px;
+  background:#28a745;
+  color:#fff;
+  border:none;
+  padding:6px 12px;
+  font-size:13px;
+  border-radius:6px;
+  cursor:pointer;
+}
+.input-group{ position:relative;margin-bottom:16px; }
+.input-group input{
+  width:100%;padding:10px 36px;
+  border-radius:6px;border:1px solid #cfd8e3;
+  font-size:15px;
+}
+button{
+  width:100%;background:#007bff;color:#fff;border:none;
+  padding:10px;font-size:16px;border-radius:6px;cursor:pointer;
+}
+button:hover{ background:#0056b3; }
+#attSection{ display:none;text-align:center; }
+video{ width:320px;height:240px;background:#000;margin:10px auto;display:block; }
+.row{ display:flex;justify-content:center;gap:10px;margin-top:10px; }
+.row button{ width:auto;padding:8px 14px; }
+
+/* Modal */
+#userModal{
+  position:fixed;left:0;top:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.5);display:none;
+  align-items:center;justify-content:center;
+}
+.modal-box{
+  background:#fff;padding:20px;width:90%;max-width:420px;
+  border-radius:12px;box-shadow:0 5px 20px rgba(0,0,0,0.2);
+}
+.modal-box h3{ text-align:center;margin-top:0; }
+.modal-box input{ width:100%;padding:10px;margin:6px 0;border:1px solid #ccc;border-radius:6px; }
+.modal-box .mrow{ display:flex;gap:10px; }
+</style>
 </head>
+
 <body>
+<div class="card">
+<button id="addUserBtn">Add User</button>
 
-<header>
-  <h2>Staff Attendance</h2>
-  <button onclick="openAddUser()">Add User</button>
-</header>
+<h2>Staff Attendance</h2>
 
-<div class="container">
-  <h3>Login</h3>
-  <label>Username</label>
-  <input list="userList" id="loginUser" />
-  <datalist id="userList"></datalist>
+<!-- LOGIN -->
+<div id="loginSection">
+  <div class="input-group">
+    <input id="username" type="text" placeholder="Email">
+  </div>
 
-  <label>Password</label>
-  <input type="password" id="loginPass" />
+  <div class="input-group">
+    <input id="password" type="password" placeholder="Password">
+  </div>
 
-  <button class="btn save" onclick="login()">Login</button>
+  <button id="loginBtn">Login</button>
+  <p id="loginMsg" style="color:red"></p>
 </div>
 
-<!-- Add User Modal -->
-<div id="addUserModal">
-  <div class="modal-content">
+<!-- ATTENDANCE -->
+<div id="attSection">
+  <div class="row">
+    <strong id="staffName">—</strong> &nbsp;
+    <span id="staffUser" style="color:#666"></span>
+  </div>
+
+  <video id="video" autoplay playsinline></video>
+  <canvas id="canvas" width="320" height="240" style="display:none"></canvas>
+
+  <div>
+    <select id="status">
+      <option>Present</option>
+      <option>Half Day</option>
+      <option>Leave</option>
+    </select>
+    <input id="note" placeholder="Note (optional)">
+  </div>
+
+  <div class="row">
+    <button id="captureBtn">Capture</button>
+    <button id="markBtn">Mark</button>
+    <button id="logoutBtn">Logout</button>
+  </div>
+
+  <p id="locText">Location: detecting...</p>
+  <p id="statusMsg"></p>
+</div>
+</div>
+
+<!-- ADD USER MODAL -->
+<div id="userModal">
+  <div class="modal-box">
     <h3>Add New User</h3>
 
-    <label>Staff Name :</label>
-    <input id="staffName" type="text" />
+    <input id="newName" placeholder="Staff Name">
+    <input id="newId" placeholder="Staff ID">
+    <input id="newUser" placeholder="User Email">
+    <input id="newPass" type="password" placeholder="Create Password">
+    <input id="newPass2" type="password" placeholder="Confirm Password">
 
-    <label>Staff ID :</label>
-    <input id="staffId" type="text" />
-
-    <label>User Name :</label>
-    <input id="newUser" type="text" />
-
-    <label>Create Your Password :</label>
-    <input id="newPass" type="password" />
-
-    <label>Confirm Password :</label>
-    <input id="confirmPass" type="password" />
-
-    <div style="display:flex; justify-content:space-between;">
-      <button class="btn save" onclick="saveUser()">Save</button>
-      <button class="btn clear" onclick="clearForm()">Clear</button>
+    <div class="row" style="margin-top:10px;">
+      <button style="background:#28a745;width:100%;" id="saveUserBtn">Save</button>
+      <button style="background:#dc3545;width:100%;" id="closeModalBtn">Close</button>
     </div>
 
-    <br>
-    <button style="width:100%; padding:10px; border:none; background:#555; color:white; border-radius:6px;" onclick="closeAddUser()">Close</button>
+    <p id="userMsg" style="color:red;"></p>
   </div>
 </div>
 
 <script>
-  function openAddUser() { document.getElementById('addUserModal').style.display='block'; }
-  function closeAddUser() { document.getElementById('addUserModal').style.display='none'; }
+// Original staff list
+const defaultStaff = [
+  { name:"V. Shanmuganathan Veerapandiyan", username:"sanmuga0006@gmail.com", password:"Jothi@123", staffId:"001" },
+  { name:"S. Bhuvaneshwar", username:"sbhuvaneshwari536@gmail.com", password:"Jothi@123", staffId:"002" }
+];
 
-  function clearForm(){
-    staffName.value = "";
-    staffId.value = "";
-    newUser.value = "";
-    newPass.value = "";
-    confirmPass.value = "";
+// Load saved users
+function loadUsers(){
+  return JSON.parse(localStorage.getItem("staffList")) || [];
+}
+
+// Save users
+function saveUsers(list){
+  localStorage.setItem("staffList", JSON.stringify(list));
+}
+
+// ADD USER — SAVE
+document.getElementById("saveUserBtn").onclick = () => {
+  let n=document.getElementById("newName").value.trim();
+  let id=document.getElementById("newId").value.trim();
+  let u=document.getElementById("newUser").value.trim();
+  let p=document.getElementById("newPass").value.trim();
+  let p2=document.getElementById("newPass2").value.trim();
+
+  if(!n || !id || !u || !p){ 
+    userMsg.textContent="Fill all fields"; return;
+  }
+  if(p !== p2){
+    userMsg.textContent="Password mismatch"; return;
   }
 
-  function loadUsers(){
-    let users = JSON.parse(localStorage.getItem('users') || '[]');
-    let list = document.getElementById('userList');
-    list.innerHTML = "";
-    users.forEach(u => {
-      let opt = document.createElement('option');
-      opt.value = u.username;
-      list.appendChild(opt);
-    });
+  const users = loadUsers();
+  users.push({name:n, staffId:id, username:u, password:p});
+  saveUsers(users);
+
+  alert("User Added Successfully!");
+  document.getElementById("userModal").style.display="none";
+};
+
+// open/close modal
+addUserBtn.onclick = ()=> userModal.style.display="flex";
+closeModalBtn.onclick = ()=> userModal.style.display="none";
+
+// Login
+const loginBtn=document.getElementById("loginBtn");
+loginBtn.onclick = () => {
+  const u=username.value.trim();
+  const p=password.value.trim();
+  if(!u || !p){ loginMsg.textContent="Enter login details"; return; }
+
+  const savedUsers = loadUsers();
+  const finalUsers = [...defaultStaff, ...savedUsers];
+
+  const found = finalUsers.find(s => s.username===u && s.password===p);
+
+  if(!found){ loginMsg.textContent="Invalid Login"; return; }
+
+  // Login success
+  current = found;
+  loginSection.style.display="none";
+  attSection.style.display="block";
+
+  staffName.textContent = found.name;
+  staffUser.textContent = found.username;
+
+  startCamera();
+  detectLocation();
+};
+
+// Camera
+let stream=null;
+async function startCamera(){
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({ video:true });
+    video.srcObject=stream;
+  }catch(e){
+    alert("Camera Error: "+e);
   }
+}
 
-  loadUsers();
+// Logout
+logoutBtn.onclick = ()=>{
+  if(stream){ stream.getTracks().forEach(t=>t.stop()); }
+  attSection.style.display="none";
+  loginSection.style.display="block";
+};
 
-  function saveUser(){
-    if(newPass.value !== confirmPass.value){ alert("Password Mismatch!"); return; }
+// Capture Photo
+captureBtn.onclick = ()=>{
+  canvas.width=video.videoWidth;
+  canvas.height=video.videoHeight;
+  canvas.getContext("2d").drawImage(video,0,0);
+  alert("Photo Captured!");
+};
 
-    let users = JSON.parse(localStorage.getItem('users') || '[]');
+// Location
+function detectLocation(){
+  navigator.geolocation.getCurrentPosition(pos=>{
+    locText.textContent = "Lat: "+pos.coords.latitude.toFixed(5)+
+                          " / Lng: "+pos.coords.longitude.toFixed(5);
+  }, ()=> locText.textContent="Location Error");
+}
 
-    users.push({
-      staffName: staffName.value,
-      staffId: staffId.value,
-      username: newUser.value,
-      password: newPass.value
-    });
-
-    localStorage.setItem('users', JSON.stringify(users));
-    alert("User Added Successfully!");
-    loadUsers();
-    closeAddUser();
-  }
-
-  function login(){
-    let u = loginUser.value;
-    let p = loginPass.value;
-
-    let users = JSON.parse(localStorage.getItem('users') || '[]');
-    let found = users.find(x => x.username === u && x.password === p);
-
-    if(found){
-      alert("Login Success!");
-    } else {
-      alert("Invalid Username or Password");
-    }
-  }
+// Send Attendance
+markBtn.onclick = ()=>{
+  let img = canvas.toDataURL();
+  alert("Attendance Sent!\n(*Your Google Script Logic Comes Here*)");
+};
 </script>
-
 </body>
 </html>
