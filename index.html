@@ -1,242 +1,201 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ta">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Staff Attendance</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Staff Attendance Portal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background:#f1f1f1;
+      margin:0;
+      padding:0;
+    }
+    header {
+      background:#333;
+      color:#fff;
+      padding:15px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    header h2 { margin:0; }
+    #addUserBtn {
+      background:#00a2ff;
+      border:none;
+      color:white;
+      padding:8px 14px;
+      border-radius:6px;
+      cursor:pointer;
+    }
+    
+    .box {
+      background:white;
+      width:350px;
+      margin:40px auto;
+      padding:25px;
+      border-radius:8px;
+      box-shadow:0 0 10px #0002;
+    }
+    input,select,button {
+      width:100%;
+      padding:10px;
+      margin-top:10px;
+      border-radius:6px;
+      border:1px solid #ccc;
+    }
+    button {
+      background:#28a745;
+      color:white;
+      cursor:pointer;
+      border:none;
+    }
 
-<style>
-body{
-  font-family: Arial;
-  background:#f4f7fb;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-  margin:0;
-}
-.card{
-  width:400px;
-  background:#fff;
-  padding:24px;
-  border-radius:12px;
-  box-shadow:0 6px 18px rgba(0,0,0,0.1);
-  text-align:center;
-  position:relative;
-}
-#addUserBtn{
-  position:absolute;
-  right:15px;
-  top:15px;
-  background:#28a745;
-  color:#fff;
-  border:none;
-  padding:6px 12px;
-  font-size:13px;
-  border-radius:6px;
-  cursor:pointer;
-}
-.input-group{ position:relative;margin-bottom:16px; }
-.input-group input{
-  width:100%;padding:10px 36px;
-  border-radius:6px;border:1px solid #cfd8e3;
-  font-size:15px;
-}
-button{
-  width:100%;background:#007bff;color:#fff;border:none;
-  padding:10px;font-size:16px;border-radius:6px;cursor:pointer;
-}
-button:hover{ background:#0056b3; }
-#attSection{ display:none;text-align:center; }
-video{ width:320px;height:240px;background:#000;margin:10px auto;display:block; }
-.row{ display:flex;justify-content:center;gap:10px;margin-top:10px; }
-.row button{ width:auto;padding:8px 14px; }
+    /* Modal */
+    #userModal {
+      position:fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      background:#0008;
+      display:none;
+      justify-content:center;
+      align-items:center;
+    }
+    #userModal .modalBox {
+      background:white;
+      padding:25px;
+      width:350px;
+      border-radius:8px;
+    }
+    #clearBtn, #saveBtn { width:48%; }
+    .rowBtn { display:flex; justify-content:space-between; }
 
-/* Modal */
-#userModal{
-  position:fixed;left:0;top:0;width:100%;height:100%;
-  background:rgba(0,0,0,0.5);display:none;
-  align-items:center;justify-content:center;
-}
-.modal-box{
-  background:#fff;padding:20px;width:90%;max-width:420px;
-  border-radius:12px;box-shadow:0 5px 20px rgba(0,0,0,0.2);
-}
-.modal-box h3{ text-align:center;margin-top:0; }
-.modal-box input{ width:100%;padding:10px;margin:6px 0;border:1px solid #ccc;border-radius:6px; }
-.modal-box .mrow{ display:flex;gap:10px; }
-</style>
+    #attSection { display:none; padding:20px; }
+  </style>
 </head>
-
 <body>
-<div class="card">
-<button id="addUserBtn">Add User</button>
 
-<h2>Staff Attendance</h2>
+<header>
+  <h2>Attendance Portal</h2>
+  <button id="addUserBtn">Add User</button>
+</header>
 
 <!-- LOGIN -->
-<div id="loginSection">
-  <div class="input-group">
-    <input id="username" type="text" placeholder="Email">
-  </div>
+<div id="loginSection" class="box">
+  <h3>Login</h3>
+  <label>Username</label>
+  <select id="loginUser"></select>
 
-  <div class="input-group">
-    <input id="password" type="password" placeholder="Password">
-  </div>
+  <label>Password</label>
+  <input type="password" id="loginPass" />
 
   <button id="loginBtn">Login</button>
   <p id="loginMsg" style="color:red"></p>
 </div>
 
-<!-- ATTENDANCE -->
+<!-- ATTENDANCE PAGE -->
 <div id="attSection">
-  <div class="row">
-    <strong id="staffName">—</strong> &nbsp;
-    <span id="staffUser" style="color:#666"></span>
-  </div>
-
-  <video id="video" autoplay playsinline></video>
-  <canvas id="canvas" width="320" height="240" style="display:none"></canvas>
-
-  <div>
-    <select id="status">
-      <option>Present</option>
-      <option>Half Day</option>
-      <option>Leave</option>
-    </select>
-    <input id="note" placeholder="Note (optional)">
-  </div>
-
-  <div class="row">
-    <button id="captureBtn">Capture</button>
-    <button id="markBtn">Mark</button>
-    <button id="logoutBtn">Logout</button>
-  </div>
-
-  <p id="locText">Location: detecting...</p>
-  <p id="statusMsg"></p>
-</div>
+  <h2>Welcome <span id="attName"></span></h2>
+  <p>You are now inside the Attendance Portal</p>
 </div>
 
 <!-- ADD USER MODAL -->
 <div id="userModal">
-  <div class="modal-box">
-    <h3>Add New User</h3>
+  <div class="modalBox">
+    <h3>Add User</h3>
 
-    <input id="newName" placeholder="Staff Name">
-    <input id="newId" placeholder="Staff ID">
-    <input id="newUser" placeholder="User Email">
-    <input id="newPass" type="password" placeholder="Create Password">
-    <input id="newPass2" type="password" placeholder="Confirm Password">
+    <label>Staff Name</label>
+    <input type="text" id="uName" />
 
-    <div class="row" style="margin-top:10px;">
-      <button style="background:#28a745;width:100%;" id="saveUserBtn">Save</button>
-      <button style="background:#dc3545;width:100%;" id="closeModalBtn">Close</button>
+    <label>Staff ID</label>
+    <input type="text" id="uID" />
+
+    <label>Username</label>
+    <input type="text" id="uUser" />
+
+    <label>Create Password</label>
+    <input type="password" id="uPass" />
+
+    <label>Confirm Password</label>
+    <input type="password" id="uCPass" />
+
+    <div class="rowBtn">
+      <button id="saveBtn">Save</button>
+      <button id="clearBtn" style="background:#dc3545">Clear</button>
     </div>
 
-    <p id="userMsg" style="color:red;"></p>
+    <button id="closeBtn" style="margin-top:10px;background:#555">Close</button>
   </div>
 </div>
 
 <script>
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby3lDig4qrf_aVu3y6uM2zPRpu0lcRCJ0E0LKuURUWBVE9l8PmK8kxQWab4zMGusYRo/exec";
+// Load Users
+let users = JSON.parse(localStorage.getItem("attUsers") || "[]");
 
-const defaultStaff = [
-  { name:"V. Shanmuganathan Veerapandiyan", username:"sanmuga0006@gmail.com", password:"Jothi@123", staffId:"001" },
-  { name:"S. Bhuvaneshwar SenthilKumar", username:"sbhuvaneshwari536@gmail.com", password:"Jothi@123", staffId:"002" },
-  { name:"S. Balamanikandan Sanmugam", username:"balamanikandan@jothi.com", password:"Jothi@123", staffId:"003" },
-  { name:"S. Thulasimani", username:"thulasimani@jothi.com", password:"Jothi@123", staffId:"004" },
-  { name:"A. Mathivathani Ashok", username:"vathanimathi.90@gmail.com", password:"Jothi@123", staffId:"005" },
-  { name:"S. Manikandan", username:"manikandan@jothi.com", password:"Jothi@123", staffId:"006" },
-  { name:"Yuvaraj", username:"yuvaraj@jothi.com", password:"Jothi@123", staffId:"007" },
-  { name:"M. Ashok Manikkam", username:"ashok@jothi.com", password:"Jothi@123", staffId:"008" },
-  { name:"D. Dhanapal", username:"dhanapal@jothi.com", password:"Jothi@123", staffId:"009" },
-  { name:"V. Manikandan Vetrivel", username:"vetrimani@jothi.com", password:"Jothi@123", staffId:"010" },
-  { name:"P. Justice Raja Palanichamy", username:"justice@jothi.com", password:"Jothi@123", staffId:"011" },
-  { name:"Priya", username:"priya@jothi.com", password:"Jothi@123", staffId:"012" },
-  { name:"Karthik", username:"karthik@jothi.com", password:"Jothi@123", staffId:"013" }
-];
+function loadUsers() {
+  const sel = document.getElementById("loginUser");
+  sel.innerHTML = "";
+  users.forEach(u => {
+    let op = document.createElement("option");
+    op.value = u.username;
+    op.textContent = u.username;
+    sel.appendChild(op);
+  });
+}
+loadUsers();
 
-function loadUsers(){ return JSON.parse(localStorage.getItem("staffList")) || []; }
-function saveUsers(list){ localStorage.setItem("staffList", JSON.stringify(list)); }
+// Open Add User
+addUserBtn.onclick = () => userModal.style.display = "flex";
+closeBtn.onclick = () => userModal.style.display = "none";
 
-// ADD USER
-saveUserBtn.onclick = () => {
-  let n=newName.value.trim();
-  let id=newId.value.trim();
-  let u=newUser.value.trim();
-  let p=newPass.value.trim();
-  let p2=newPass2.value.trim();
-
-  if(!n || !id || !u || !p){ userMsg.textContent="Fill all fields"; return; }
-  if(p!==p2){ userMsg.textContent="Password mismatch"; return; }
-
-  const users=loadUsers();
-  users.push({name:n, staffId:id, username:u, password:p});
-  saveUsers(users);
-
-  alert("User Added!");
-  userModal.style.display="none";
+// Clear
+clearBtn.onclick = () => {
+  uName.value = "";
+  uID.value = "";
+  uUser.value = "";
+  uPass.value = "";
+  uCPass.value = "";
 };
 
-addUserBtn.onclick = ()=> userModal.style.display="flex";
-closeModalBtn.onclick = ()=> userModal.style.display="none";
+// Save User (Local Only)
+saveBtn.onclick = () => {
+  if (uPass.value !== uCPass.value) {
+    alert("Passwords not match machi!");
+    return;
+  }
+
+  const newU = {
+    name: uName.value,
+    id: uID.value,
+    username: uUser.value,
+    password: uPass.value
+  };
+
+  users.push(newU);
+  localStorage.setItem("attUsers", JSON.stringify(users));
+
+  alert("User Added Successfully!");
+  loadUsers();
+  userModal.style.display = "none";
+};
 
 // LOGIN
 loginBtn.onclick = () => {
-  const u=username.value.trim();
-  const p=password.value.trim();
+  const u = loginUser.value;
+  const p = loginPass.value;
 
-  const savedUsers = loadUsers();
-  const finalUsers = [...defaultStaff, ...savedUsers];
+  const found = users.find(x => x.username === u && x.password === p);
 
-  const found = finalUsers.find(s => s.username===u && s.password===p);
+  if (!found) {
+    loginMsg.textContent = "Invalid Username or Password";
+    return;
+  }
 
-  if(!found){ loginMsg.textContent="Invalid Login"; return; }
-
-  current=found;
-  loginSection.style.display="none";
-  attSection.style.display="block";
-
-  staffName.textContent = found.name;
-  staffUser.textContent = found.username;
-
-  startCamera();
-  detectLocation();
-};
-
-// CAMERA
-let stream=null;
-async function startCamera(){
-  stream = await navigator.mediaDevices.getUserMedia({ video:true });
-  video.srcObject=stream;
-}
-logoutBtn.onclick = ()=>{
-  if(stream){ stream.getTracks().forEach(t=>t.stop()); }
-  attSection.style.display="none";
-  loginSection.style.display="block";
-};
-
-// CAPTURE
-captureBtn.onclick = ()=>{
-  canvas.width=video.videoWidth;
-  canvas.height=video.videoHeight;
-  canvas.getContext("2d").drawImage(video,0,0);
-  alert("Captured!");
-};
-
-// LOCATION
-function detectLocation(){
-  navigator.geolocation.getCurrentPosition(pos=>{
-    locText.textContent="Lat:"+pos.coords.latitude.toFixed(5)+" Lng:"+pos.coords.longitude.toFixed(5);
-  });
-}
-
-// MARK
-markBtn.onclick = ()=>{
-  alert("Attendance Sending...\nGoogle Sheet Connected ✔");
+  loginSection.style.display = "none";
+  attSection.style.display = "block";
+  attName.textContent = found.name;
 };
 </script>
+
 </body>
 </html>
